@@ -46,16 +46,31 @@ Each of the following case study questions can be answered using a single SQL st
     group by customer_id
     order by customer_id;
 
+![Screenshot (13)](https://github.com/user-attachments/assets/d018f45d-538b-4190-94ec-afac9cb63208)
+
+
 ### How many days has each customer visited the restaurant?
     Select customer_id,count(distinct(order_date)) as days_customer_visited 
     from sales group by customer_id;
-    
-### What is the most purchased item on the menu and how many times was it purchased by all customers?
+![Screenshot (17)](https://github.com/user-attachments/assets/fa837ec4-5dfe-4e48-8c15-adeba094d03c)
+
+### What was the first item from the menu purchased by each customer?
     select customer_id,product_name 
     from menu 
     join sales on sales.product_id=menu.product_id
     where sales.order_date = (select min(order_date) from sales where customer_id=sales.customer_id)
     order by sales.customer_id,sales.order_date;
+![Screenshot (19)](https://github.com/user-attachments/assets/2e391c98-3e7e-466b-abda-b638e34a9392)
+
+    
+### What is the most purchased item on the menu and how many times was it purchased by all customers?
+    select count(sales.product_id) as most_purchased,product_name 
+    from sales join menu on sales.product_id=menu.product_id
+    group by product_name
+    order by most_purchased desc;
+![Screenshot (20)](https://github.com/user-attachments/assets/f3385167-8f6e-44f2-a011-c674e1f06602)
+
+
     
 ### Which item was the most popular for each customer?
     WITH PurchaseCounts AS (
@@ -86,6 +101,8 @@ Each of the following case study questions can be answered using a single SQL st
         menu m ON pc.product_id = m.product_id
       ORDER BY 
         pc.customer_id;
+![Screenshot (21)](https://github.com/user-attachments/assets/1b5d7d3b-8870-49d4-8e22-27cfacd80be8)
+
     
 ### Which item was purchased first by the customer after they became a member?
       select distinct(sales.customer_id),menu.product_name
@@ -93,7 +110,8 @@ Each of the following case study questions can be answered using a single SQL st
       join menu on menu.product_id=sales.product_id
       where join_date<order_date
       order by sales.customer_id;
-      
+![Screenshot (22)](https://github.com/user-attachments/assets/6918a08b-31cb-429f-8fa5-ae4147a54d00)
+
 ### Which item was purchased just before the customer became a member?
     select distinct(sales.customer_id),menu.product_name
     from sales
@@ -101,6 +119,8 @@ Each of the following case study questions can be answered using a single SQL st
     join members on members.customer_id=sales.customer_id
     where sales.order_date < members.join_date
     order by sales.customer_id;
+![Screenshot (23)](https://github.com/user-attachments/assets/170f9294-f23e-4d3d-8bb1-d13edd0b7edd)
+
     
 ### What is the total items and amount spent for each member before they became a member?
     select sales.customer_id,count(menu.product_id) as total_items,sum(menu.price)as amount_spent
@@ -110,6 +130,8 @@ Each of the following case study questions can be answered using a single SQL st
     where sales.order_date < members.join_date
     group by sales.customer_id
     order by sales.customer_id;
+![Screenshot (24)](https://github.com/user-attachments/assets/e9f6bfce-3217-47b7-ba2d-f557bee5e7e4)
+
 ### If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
     select sales.customer_id,
     sum(case
@@ -120,6 +142,7 @@ Each of the following case study questions can be answered using a single SQL st
     menu join sales on sales.product_id=menu.product_id
     group by sales.customer_id
     order by sales.customer_id;
+![Screenshot (25)](https://github.com/user-attachments/assets/3ce6d1ab-68d8-4a0a-adf4-617669a63a90)
     
 ### In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
     select sales.customer_id,
@@ -133,3 +156,5 @@ Each of the following case study questions can be answered using a single SQL st
     join menu on menu.product_id=sales.product_id
     where sales.customer_id in ('A','B') and sales.order_date between '2021-01-01' and '2021-01-31'
     group by sales.customer_id;
+![Screenshot (26)](https://github.com/user-attachments/assets/f8dda980-2dad-4ef9-b384-aeab40f44588)
+
